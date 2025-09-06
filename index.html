@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Monthly Donation Form</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      color: #212529;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+      color: white;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 16px;
+    }
+    
+    .logo i {
+      font-size: 24px;
+      color: #2c3e50;
+    }
+    
+    .header-content h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .header-content p {
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    
+    .payment-body {
+      padding: 32px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      color: #2c3e50;
+      margin: 28px 0 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+    }
+    
+    .section-title i {
+      margin-right: 12px;
+    }
+    
+    .donation-amounts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .donation-amounts .donation-option {
+      flex: 1 1 30%;
+      background: #f8f9fa;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .donation-amounts .donation-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .donation-amounts .donation-option.active {
+      background: #2c3e50;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .other-amount-container {
+      display: none;
+      margin-top: 16px;
+    }
+    
+    .other-amount-container.visible {
+      display: block;
+    }
+    
+    .currency-symbol {
+      position: relative;
+    }
+    
+    .currency-symbol::before {
+      content: "€";
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      color: #495057;
+      font-weight: 500;
+      z-index: 1;
+    }
+    
+    .currency-symbol input {
+      padding-left: 38px;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      color: #495057;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.2s ease;
+      color: #212529;
+      background: white;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2c3e50;
+      box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    
+    .card-element-container {
+      padding: 16px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      background: white;
+    }
+    
+    .StripeElement--focus {
+      box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+      border-color: #2c3e50;
+    }
+    
+    .pay-button {
+      background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+    
+    .pay-button:hover {
+      background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .pay-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .secure-notice {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
+      color: #6c757d;
+      font-size: 14px;
+    }
+    
+    .secure-notice i {
+      margin-right: 8px;
+      color: #28a745;
+    }
+    
+    .accepted-cards {
+      margin-top: 28px;
+      text-align: center;
+    }
+    
+    .accepted-cards p {
+      font-size: 14px;
+      color: #6c757d;
+      margin-bottom: 12px;
+    }
+    
+    .card-icons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+    
+    .card-icons i {
+      font-size: 32px;
+      color: #495057;
+    }
+    
+    .payment-footer {
+      background: #f8f9fa;
+      padding: 20px 32px;
+      text-align: center;
+      border-top: 1px solid #e9ecef;
+    }
+    
+    .payment-footer p {
+      font-size: 14px;
+      color: #6c757d;
+    }
+    
+    #donation-by {
+      font-style: italic;
+    }
+    
+    #donation-by::placeholder {
+      font-style: italic;
+      color: #6c757d;
+    }
+    
+    .card-errors {
+      color: #dc3545;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    
+    .monthly-notice {
+      background: #e8f4fd;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: center;
+      border-left: 4px solid #3498db;
+    }
+    
+    .monthly-notice i {
+      color: #3498db;
+      margin-right: 8px;
+    }
+    
+    .loading-spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .success-message {
+      display: none;
+      background: #d4edda;
+      color: #155724;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    .api-key-notice {
+      background: #fff3cd;
+      color: #856404;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      border-left: 4px solid #ffc107;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <form id="payment-form">
+    <div class="header" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;">
+    <div class="logo" style="display: none;"><i class="fas fa-calendar-check" style="font-size: 36px;"></i></div>
+    <div class="header-content">
+        <h1>Monthly donation</h1>
+        <p>Support our mission with a recurring monthly contribution</p>
+    </div>
+    </div>
+
+    <div class="payment-body">
+      <div class="section-title"><i class="fas fa-money-bill-wave"></i><span>Choose your donation amount</span></div>
+      
+      <div class="donation-amounts">
+        <div class="donation-option active" data-value="10">€10/month</div>
+        <div class="donation-option" data-value="25">€25/month</div>
+        <div class="donation-option" data-value="50">€50/month</div>
+        <div class="donation-option" data-value="100">€100/month</div>
+        <div class="donation-option" data-value="other">Other amount</div>
+      </div>
+
+      <div class="other-amount-container" id="other-amount-container">
+        <div class="form-group currency-symbol">
+          <label for="custom-amount">Enter Custom Monthly Amount (€)</label>
+          <input type="number" id="custom-amount" placeholder="Enter amount" min="1" step="0.01">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="donation-by">Make donation by the name of (Optional)</label>
+        <input type="text" id="donation-by" placeholder="e.g., In memory of someone, company name, etc.">
+      </div>
+
+      <div class="section-title"><i class="fas fa-user"></i><span>Personal Information</span></div>
+      <div class="form-group"><label for="name">Full Name</label><input type="text" id="name" placeholder="Legal name and familly name" required></div>
+      <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" placeholder="your.email@example.com" required></div>
+      <div class="form-group"><label for="phone">Phone Number (Optional)</label><input type="tel" id="phone" placeholder="Phone number (with country code)"></div>
+
+      <div class="section-title"><i class="fas fa-address-card"></i><span>Billing Address</span></div>
+      <div class="form-group"><label for="line1">Street Address</label><input type="text" id="line1" placeholder="Av. Gustave Eiffel" required></div>
+      <div class="form-group"><label for="line2">Apt, Suite, Building (Optional)</label><input type="text" id="line2" placeholder="Building 12, Appertment 70"></div>
+
+      <div class="form-row">
+        <div class="form-group"><label for="city">City</label><input type="text" id="city" placeholder="Paris" required></div>
+        <div class="form-group"><label for="state">State/Province</label><input type="text" id="state" placeholder="Île-de-France"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label for="postal_code">Postal Code</label><input type="text" id="postal_code" placeholder="75001" required></div>
+        <div class="form-group"><label for="country">Country</label>
+          <select id="country" required>
+            <option value="">Select country</option>
+            <option value="FR" selected>France</option>
+            <option value="DE">Germany</option>
+            <option value="IT">Italy</option>
+            <option value="ES">Spain</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-title"><i class="fas fa-credit-card"></i><span>Payment Information</span></div>
+      <div class="form-group"><label for="card-element">Card Details</label>
+        <div class="card-element-container" id="card-element"></div>
+        <div class="card-errors" id="card-errors" role="alert"></div>
+      </div>
+      <div class="form-group"><label for="card-name">Cardholder Name</label><input type="text" id="card-name" placeholder="As printed on your card" required></div>
+
+      <button class="pay-button" id="submit-button" type="submit">
+        <span class="loading-spinner" id="spinner"></span>
+        <span id="button-text">Donate €10 / month</span>
+      </button>
+
+      <div class="secure-notice"><i class="fas fa-lock"></i><span>Your payment is secured with SSL encryption</span></div>
+      <div class="accepted-cards">
+        <p>We accept</p>
+        <div class="card-icons">
+          <i class="fa-brands fa-cc-visa"></i>
+          <i class="fa-brands fa-cc-mastercard"></i>
+          <i class="fa-brands fa-cc-amex"></i>
+          <i class="fa-brands fa-cc-discover"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="payment-footer">
+      <p>By making a monthly donation, you authorize recurring contributions to support our association. These contributions will continue automatically each month until you choose to modify or cancel them. You retain full control and may update or cancel your donation at any time. </p>
+      <p>© 2025 Govinda's. All rights reserved.</p>
+    </div>
+  </form>
+</div>
+
+<script>
+// Stripe public API key - Replace with your actual publishable key
+const stripe = Stripe('pk_test_51S1OAH3pBglTeA0mBud6ByC3NIv6nMTrQ4ITBQ1h1GDTBX5ygMuoeCVeBZdF1Jy5wmQq819Xbd4kKRjZ3aJJcDfu00dGiF5MC6');
+const elements = stripe.elements();
+const style = {
+  base: {
+    color: '#212529',
+    fontFamily: '"Inter", "Segoe UI", system-ui, sans-serif',
+    fontSmoothing: 'antialiased',
+    fontSize: '16px',
+    '::placeholder': { color: '#6c757d' }
+  },
+  invalid: { color: '#dc3545', iconColor: '#dc3545' }
+};
+
+// Creation of card element
+const card = elements.create('card', { style: style, hidePostalCode: true });
+card.mount('#card-element');
+
+// Handling form elements
+const donationOptions = document.querySelectorAll('.donation-amounts .donation-option');
+const otherAmountContainer = document.getElementById('other-amount-container');
+const customAmountInput = document.getElementById('custom-amount');
+const payButton = document.getElementById('submit-button');
+const buttonText = document.getElementById('button-text');
+const spinner = document.getElementById('spinner');
+const form = document.getElementById('payment-form');
+const cardErrors = document.getElementById('card-errors');
+
+// Handling donation amount selection
+donationOptions.forEach(option => {
+  option.addEventListener('click', function() {
+    donationOptions.forEach(opt => opt.classList.remove('active'));
+    this.classList.add('active');
+    if (this.dataset.value === 'other') {
+      otherAmountContainer.classList.add('visible');
+      customAmountInput.focus();
+    } else {
+      otherAmountContainer.classList.remove('visible');
+    }
+    updateButtonText();
+  });
+});
+
+// Updating button text when custom amount changes
+customAmountInput.addEventListener('input', updateButtonText);
+
+// Getting the selected amount
+function getSelectedAmount() {
+  const activeOption = document.querySelector('.donation-amounts .donation-option.active');
+  if (activeOption.dataset.value === 'other') {
+    return parseFloat(customAmountInput.value) || 0;
+  } else {
+    return parseFloat(activeOption.dataset.value);
+  }
+}
+
+// Updating the pay button text
+function updateButtonText() {
+  const amount = getSelectedAmount();
+  
+  if (amount > 0) {
+    buttonText.textContent = `Donate €${amount}/month`;
+  } else if (document.querySelector('.donation-amounts .donation-option.active').dataset.value === 'other') {
+    buttonText.textContent = 'Enter amount';
+  }
+}
+
+// Display of card errors
+card.addEventListener('change', function(event) {
+  cardErrors.textContent = event.error ? event.error.message : '';
+});
+
+// Handling form submission
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const amount = getSelectedAmount();
+  if (amount <= 0) {
+    alert('Please enter a valid amount');
+    return;
+  }
+
+  cardErrors.textContent = '';
+  payButton.disabled = true;
+  buttonText.textContent = 'Processing...';
+  spinner.style.display = 'inline-block';
+
+  try {
+    const donationByName = document.getElementById('donation-by').value;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    
+    // Collect address information
+    const address = {
+      line1: document.getElementById('line1').value,
+      line2: document.getElementById('line2').value,
+      city: document.getElementById('city').value,
+      state: document.getElementById('state').value,
+      postal_code: document.getElementById('postal_code').value,
+      country: document.getElementById('country').value,
+    };
+
+    // Create payment method first (PCI compliant approach)
+    const { error: pmError, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: card,
+      billing_details: {
+        name: document.getElementById('card-name').value,
+        email: email,
+        phone: phone,
+        address: {
+          line1: address.line1,
+          line2: address.line2,
+          city: address.city,
+          state: address.state,
+          postal_code: address.postal_code,
+          country: address.country,
+        }
+      }
+    });
+
+    if (pmError) {
+      throw new Error(pmError.message);
+    }
+
+    // Creating subscription on the server with payment method ID
+    const response = await fetch('/.netlify/functions/create-subscription', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: 'eur',
+        donation_by: donationByName,
+        name: name,
+        email: email,
+        phone: phone,
+        address: address,
+        paymentMethodId: paymentMethod.id
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Failed to create subscription');
+
+    if (data.status === 'active') {
+      // Subscription is active immediately
+      const paymentDetails = {
+        amount: amount,
+        name: name,
+        email: email,
+        donationBy: donationByName || '',
+        subscriptionId: data.subscriptionId,
+        isMonthly: true
+      };
+      
+      // Store in sessionStorage to pass to the success page
+      sessionStorage.setItem('paymentDetails', JSON.stringify(paymentDetails));
+      
+      // Redirect to success page
+      window.location.href = 'success_confirmation.html';
+    } else if (data.status === 'requires_action') {
+      // Requires additional authentication
+      const { error: confirmError } = await stripe.confirmCardPayment(data.clientSecret);
+      
+      if (confirmError) {
+        throw new Error(confirmError.message);
+      } else {
+        // Success after authentication
+        const paymentDetails = {
+          amount: amount,
+          name: name,
+          email: email,
+          donationBy: donationByName || '',
+          subscriptionId: data.subscriptionId,
+          isMonthly: true
+        };
+        
+        sessionStorage.setItem('paymentDetails', JSON.stringify(paymentDetails));
+        window.location.href = 'success_confirmation.html';
+      }
+    } else {
+      throw new Error('Unexpected response from server');
+    }
+  } catch (err) {
+    console.error('Error:', err);
+    cardErrors.textContent = err.message;
+    payButton.disabled = false;
+    buttonText.textContent = `Donate €${getSelectedAmount()}/month`;
+    spinner.style.display = 'none';
+  }
+});
+
+// Initializing the button text
+updateButtonText();
+</script>
+</body>
+</html>

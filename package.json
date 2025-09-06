@@ -1,0 +1,19 @@
+{
+  "name": "stripe-payment-form",
+  "version": "1.0.0",
+  "description": "A secure payment form using Stripe",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "stripe": "^12.0.0"
+  },
+  "keywords": [
+    "stripe",
+    "payment",
+    "netlify"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

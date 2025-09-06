@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Donation Successful</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background: linear-gradient(135deg, #f9f7f0 0%, #e8f4f8 100%);
+      min-height:100vh; display:flex; justify-content:center; align-items:center;
+      padding:20px; overflow-x:hidden;
+    }
+    .container { max-width:800px; text-align:center; z-index:10; position:relative; }
+    
+    .success-content {
+      background:white; border-radius:20px; width:90%; max-width:500px; padding:30px; text-align:center;
+      box-shadow:0 20px 40px rgba(0,0,0,0.3); position:relative; z-index:1002;
+      margin: 0 auto;
+    }
+
+    .success-icon {
+      width:120px; height:120px;
+      background: radial-gradient(circle at 30% 30%, #4CAF50, #2E8B57);
+      border-radius:50%; display:flex; justify-content:center; align-items:center;
+      margin:0 auto 20px; position: relative;
+      box-shadow: 0 0 20px rgba(76,175,80,0.6), 0 0 40px rgba(76,175,80,0.3) inset;
+    }
+    .success-icon i { font-size:50px; color:white; }
+
+    .action-button {
+      background: linear-gradient(to right,#4CAF50,#2E8B57);
+      color:white; border:none; border-radius:8px; padding:12px 24px;
+      font-size:16px; font-weight:600; cursor:pointer;
+      margin-top: 20px;
+      display: inline-block;
+      text-decoration: none;
+    }
+
+    /* Donation Details */
+    .donation-details { background:#f8f9fa; border-radius:12px; padding:20px; margin:20px 0; text-align:left; }
+    .donation-details h3 { color:#2c3e50; margin-bottom:15px; font-size:18px; border-bottom:1px solid #e9ecef; padding-bottom:10px; }
+    .detail-row { display:flex; justify-content:space-between; margin-bottom:10px; }
+    .detail-label { color:#7f8c8d; font-weight:500; }
+    .detail-value { color:#2c3e50; font-weight:600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="success-content">
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+
+      <h2>Monthly Donation Setup Complete!</h2>
+      <p>Thank you for setting up your monthly donation. Your ongoing support helps us make the world a more beautiful place.</p>
+
+      <div class="donation-details">
+        <h3>Donation Details</h3>
+        <div class="detail-row"><span class="detail-label">Monthly Amount:</span><span class="detail-value" id="success-amount">€10.00/month</span></div>
+        <div class="detail-row"><span class="detail-label">Name:</span><span class="detail-value" id="success-name">John Smith</span></div>
+        <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value" id="success-email">john@example.com</span></div>
+        <div class="detail-row"><span class="detail-label">On behalf of:</span><span class="detail-value" id="success-on-behalf-of">N/A</span></div>
+        <div class="detail-row"><span class="detail-label">Subscription ID:</span><span class="detail-value" id="success-subscription-id">SUB-7842-8992</span></div>
+      </div>
+
+      <a href="index.html" class="action-button"><i class="fas fa-check-circle"></i> Return Home</a>
+    </div>
+  </div>
+
+  <script>
+    // Function to update payment details from sessionStorage
+    function updatePaymentDetails() {
+      try {
+        const paymentDetails = JSON.parse(sessionStorage.getItem('paymentDetails'));
+        
+        if (paymentDetails) {
+          console.log("Payment details found:", paymentDetails);
+          
+          // Update the payment details in the UI
+          document.getElementById('success-amount').textContent = `€${paymentDetails.amount.toFixed(2)}/month`;
+          document.getElementById('success-name').textContent = paymentDetails.name;
+          document.getElementById('success-email').textContent = paymentDetails.email;
+          
+          // Update the "On behalf of" field - show N/A if empty
+          const onBehalfOfValue = paymentDetails.donationBy && paymentDetails.donationBy.trim() !== '' ? 
+                                paymentDetails.donationBy : 'N/A';
+          document.getElementById('success-on-behalf-of').textContent = onBehalfOfValue;
+          
+          // Use subscription ID if available
+          const subscriptionId = paymentDetails.subscriptionId || 'N/A';
+          document.getElementById('success-subscription-id').textContent = subscriptionId;
+          
+          // Clear the stored data
+          sessionStorage.removeItem('paymentDetails');
+        } else {
+          console.log("No payment details found in sessionStorage");
+        }
+      } catch (error) {
+        console.error('Error updating payment details:', error);
+      }
+    }
+
+    window.addEventListener('load', updatePaymentDetails);
+  </script>
+</body>
+</html>
