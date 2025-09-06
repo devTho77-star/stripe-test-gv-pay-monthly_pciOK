@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monthly Donation Successful</title>
+  <title>Payment Successful</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -13,30 +13,120 @@
       padding:20px; overflow-x:hidden;
     }
     .container { max-width:800px; text-align:center; z-index:10; position:relative; }
-    
+    h1 {
+      color:#2c3e50; margin-bottom:30px; font-size:2.5rem;
+      text-shadow:2px 2px 4px rgba(0,0,0,0.1);
+      animation: fadeBounce 1.5s ease forwards;
+    }
+    @keyframes fadeBounce {
+      0% { opacity: 0; transform: translateY(-30px); }
+      60% { opacity: 1; transform: translateY(10px); }
+      80% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+    .demo-text { color:#7f8c8d; margin-bottom:40px; font-size:1.2rem; max-width:600px; margin:auto; line-height:1.6; }
+    .btn {
+      background: linear-gradient(to right, #4CAF50, #2E8B57); color:white; border:none;
+      padding:15px 30px; font-size:18px; border-radius:50px; cursor:pointer;
+      box-shadow:0 5px 15px rgba(76,175,80,0.4);
+      animation: pulseBtn 2s infinite alternate;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+    }
+    @keyframes pulseBtn {
+      0% { transform: scale(1); box-shadow:0 5px 15px rgba(76,175,80,0.4); }
+      50% { transform: scale(1.05); box-shadow:0 8px 20px rgba(76,175,80,0.6); }
+      100% { transform: scale(1); box-shadow:0 5px 15px rgba(76,175,80,0.4); }
+    }
+
+    /* Success message styling */
     .success-content {
       background:white; border-radius:20px; width:90%; max-width:500px; padding:30px; text-align:center;
       box-shadow:0 20px 40px rgba(0,0,0,0.3); position:relative; z-index:1002;
       margin: 0 auto;
     }
 
-    .success-icon {
-      width:120px; height:120px;
-      background: radial-gradient(circle at 30% 30%, #4CAF50, #2E8B57);
-      border-radius:50%; display:flex; justify-content:center; align-items:center;
-      margin:0 auto 20px; position: relative;
-      box-shadow: 0 0 20px rgba(76,175,80,0.6), 0 0 40px rgba(76,175,80,0.3) inset;
-    }
-    .success-icon i { font-size:50px; color:white; }
+    /* Persistent Animations */
+    .success-content h2 { animation: floatHeading 3s ease-in-out infinite; }
+    @keyframes floatHeading { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
+
+    .success-content p { animation: floatText 3s ease-in-out infinite; }
+    @keyframes floatText { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-3px);} }
 
     .action-button {
       background: linear-gradient(to right,#4CAF50,#2E8B57);
       color:white; border:none; border-radius:8px; padding:12px 24px;
       font-size:16px; font-weight:600; cursor:pointer;
+      animation: pulseButton 2s ease-in-out infinite alternate;
       margin-top: 20px;
       display: inline-block;
       text-decoration: none;
     }
+    @keyframes pulseButton { 0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);} }
+
+    /* Decorative success icon */
+    .success-icon {
+      width:120px; height:120px;
+      background: radial-gradient(circle at 30% 30%, #4CAF50, #2E8B57);
+      border-radius:50%; display:flex; justify-content:center; align-items:center;
+      margin:0 auto 20px; position: relative; z-index:1002;
+      box-shadow: 0 0 20px rgba(76,175,80,0.6), 0 0 40px rgba(76,175,80,0.3) inset;
+      animation: iconBounce 2s ease-in-out infinite alternate, iconFloat 3s ease-in-out infinite;
+    }
+    .success-icon i { font-size:50px; color:white; z-index:1; }
+
+    /* Glowing halo behind icon */
+    .success-icon::before {
+      content: '';
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(76,175,80,0.3), transparent 60%);
+      z-index: -1;
+      animation: haloPulse 2s ease-in-out infinite alternate;
+    }
+
+    /* Rotating ring around icon */
+    .success-icon::after {
+      content: '';
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.3);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(0deg);
+      z-index: -1;
+      animation: rotateRing 4s linear infinite;
+    }
+
+    @keyframes haloPulse {
+      0% { transform: translate(-50%, -50%) scale(1); opacity:0.5; }
+      50% { transform: translate(-50%, -50%) scale(1.1); opacity:0.7; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity:0.5; }
+    }
+    @keyframes rotateRing {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes iconBounce { 0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);} }
+    @keyframes iconFloat { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-5px) scale(1.05);} }
+
+    .corner-decoration {
+      position:absolute; font-size:80px; color:#4CAF50; opacity:0.1; z-index:1001;
+      animation: cornerTwinkle 3s ease-in-out infinite alternate;
+    }
+    @keyframes cornerTwinkle { 0%{opacity:0.1; transform:scale(1);}50%{opacity:0.15; transform:scale(1.05);}100%{opacity:0.1; transform:scale(1);} }
+    .corner-top-left { top:10px; left:10px; }
+    .corner-top-right { top:10px; right:10px; }
+    .corner-bottom-left { bottom:10px; left:10px; }
+    .corner-bottom-right { bottom:10px; right:10px; }
 
     /* Donation Details */
     .donation-details { background:#f8f9fa; border-radius:12px; padding:20px; margin:20px 0; text-align:left; }
@@ -44,28 +134,47 @@
     .detail-row { display:flex; justify-content:space-between; margin-bottom:10px; }
     .detail-label { color:#7f8c8d; font-weight:500; }
     .detail-value { color:#2c3e50; font-weight:600; }
+
+    /* Flowers */
+    .flower { position:fixed; pointer-events:none; z-index:1001; font-size:24px; opacity:0.9;
+      text-shadow:0 0 6px rgba(255,255,255,0.8),0 0 12px rgba(255,192,203,0.6);
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
+    }
+    #flower-ground { position:fixed; bottom:0; left:0; width:100%; height:200px; pointer-events:none; z-index:1001; overflow:visible; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="success-content">
-      <div class="success-icon"><i class="fas fa-check"></i></div>
+      <div class="corner-decoration corner-top-left">❀</div>
+      <div class="corner-decoration corner-top-right">❀</div>
+      <div class="corner-decoration corner-bottom-left">❀</div>
+      <div class="corner-decoration corner-bottom-right">❀</div>
 
-      <h2>Monthly Donation Setup Complete!</h2>
-      <p>Thank you for setting up your monthly donation. Your ongoing support helps us make the world a more beautiful place.</p>
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+      
+      
+      <h2 style="margin-bottom: 15px; color: #2E8B57;">Payment Successful!</h2>
+      <p style="font-size: 1.1rem; line-height: 1.6; margin-top: 10px; margin-bottom: 10px; font-weight: bold;"> Thank you for your subscription ❤️️ </p>
+
+
+      <p>Your monthly gift is like planting a seed of compassion - with each season it grows, bringing renewal, harmony, and the promise of our visioned brighter tomorrow.</p>
+
 
       <div class="donation-details">
         <h3>Donation Details</h3>
-        <div class="detail-row"><span class="detail-label">Monthly Amount:</span><span class="detail-value" id="success-amount">€10.00/month</span></div>
+        <div class="detail-row"><span class="detail-label">Amount:</span><span class="detail-value" id="success-amount">€50.00</span></div>
         <div class="detail-row"><span class="detail-label">Name:</span><span class="detail-value" id="success-name">John Smith</span></div>
         <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value" id="success-email">john@example.com</span></div>
-        <div class="detail-row"><span class="detail-label">On behalf of:</span><span class="detail-value" id="success-on-behalf-of">N/A</span></div>
-        <div class="detail-row"><span class="detail-label">Subscription ID:</span><span class="detail-value" id="success-subscription-id">SUB-7842-8992</span></div>
+        <div class="detail-row"><span class="detail-label">On behalf of a person/company/organization:</span><span class="detail-value" id="success-on-behalf-of">In memory of Jane Doe</span></div>
+        <div class="detail-row"><span class="detail-label">Transaction ID:</span><span class="detail-value" id="success-transaction-id">PAY-7842-8992</span></div>
       </div>
 
       <a href="index.html" class="action-button"><i class="fas fa-check-circle"></i> Return Home</a>
     </div>
   </div>
+
+  <div id="flower-ground"></div>
 
   <script>
     // Function to update payment details from sessionStorage
@@ -74,10 +183,8 @@
         const paymentDetails = JSON.parse(sessionStorage.getItem('paymentDetails'));
         
         if (paymentDetails) {
-          console.log("Payment details found:", paymentDetails);
-          
           // Update the payment details in the UI
-          document.getElementById('success-amount').textContent = `€${paymentDetails.amount.toFixed(2)}/month`;
+          document.getElementById('success-amount').textContent = `€${paymentDetails.amount.toFixed(2)}`;
           document.getElementById('success-name').textContent = paymentDetails.name;
           document.getElementById('success-email').textContent = paymentDetails.email;
           
@@ -86,21 +193,106 @@
                                 paymentDetails.donationBy : 'N/A';
           document.getElementById('success-on-behalf-of').textContent = onBehalfOfValue;
           
-          // Use subscription ID if available
-          const subscriptionId = paymentDetails.subscriptionId || 'N/A';
-          document.getElementById('success-subscription-id').textContent = subscriptionId;
+          document.getElementById('success-transaction-id').textContent = paymentDetails.transactionId;
           
           // Clear the stored data
           sessionStorage.removeItem('paymentDetails');
         } else {
-          console.log("No payment details found in sessionStorage");
+          // If no payment details found, show a generic message
+          document.getElementById('success-amount').textContent = '€0.00';
+          document.getElementById('success-name').textContent = 'Not available';
+          document.getElementById('success-email').textContent = 'Not available';
+          document.getElementById('success-on-behalf-of').textContent = 'N/A';
+          document.getElementById('success-transaction-id').textContent = 'N/A';
         }
       } catch (error) {
         console.error('Error updating payment details:', error);
       }
     }
 
-    window.addEventListener('load', updatePaymentDetails);
+    // Start the floral animation immediately when page loads
+    window.addEventListener('load', () => {
+      updatePaymentDetails();
+      createFallingFlowers();
+    });
+
+    const flowers = ['❀','✿','❁'];
+    const colors = ['#FF9FF3','#FEA47F','#F97F51','#B33771','#6D214F','#82589F','#2C3A47','#4CAF50','#2E8B57','#ff6f61','#f7b32b','#6a89cc','#78e08f','#e55039'];
+    const landedFlowers = [];
+    const flowerSpacing = 20;
+    const ground = document.getElementById('flower-ground');
+
+    function createFallingFlowers() {
+      const flowerNumber = 100;
+      for(let i=0;i<flowerNumber;i++){
+        setTimeout(createFlower,i*100);
+      }
+    }
+
+    function createFlower() {
+      const flower = document.createElement('div');
+      flower.className = 'flower';
+      flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+      flower.style.position = 'absolute';
+      flower.style.left = Math.random() * window.innerWidth + 'px';
+      flower.style.top = '-50px';
+      flower.style.color = colors[Math.floor(Math.random() * colors.length)];
+      flower.style.fontSize = (Math.random() * 20 + 16) + 'px';
+      flower.style.opacity = Math.random() * 0.8 + 0.4;
+      document.body.appendChild(flower);
+
+      const duration = Math.random() * 2 + 2;
+      const driftX = (Math.random() - 0.5) * 100;
+      const rotation = (Math.random() > 0.5 ? 360 : -360) * Math.random();
+      const finalScale = Math.random() * 0.8 + 0.6;
+
+      const startLeft = parseFloat(flower.style.left);
+      const startTop = parseFloat(flower.style.top);
+      const bottomLimit = window.innerHeight - 50;
+      const startTime = performance.now();
+
+      function animate(time) {
+        const elapsed = (time - startTime) / 1000;
+        const progress = Math.min(elapsed / duration, 1);
+        flower.style.top = startTop + progress * bottomLimit + 'px';
+        flower.style.left = startLeft + progress * driftX + 'px';
+        flower.style.transform = `rotate(${rotation * progress}deg) scale(${finalScale})`;
+        if (progress < 1) requestAnimationFrame(animate);
+        else {
+          const rect = flower.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          let landingY = rect.bottom;
+          landedFlowers.forEach(f => {
+            const fRect = f.getBoundingClientRect();
+            const distX = Math.abs(fRect.left + fRect.width/2 - centerX);
+            if (distX < flowerSpacing) landingY = Math.min(landingY, fRect.top - rect.height * 0.3);
+          });
+          let finalX = parseFloat(flower.style.left);
+          landedFlowers.forEach(f => {
+            const fRect = f.getBoundingClientRect();
+            if (Math.abs(fRect.left - finalX) < flowerSpacing) finalX += (Math.random() > 0.5 ? 1 : -1) * flowerSpacing;
+          });
+          const startFinalX = parseFloat(flower.style.left);
+          const startFinalY = parseFloat(flower.style.top);
+          const slideDuration = 500 + Math.random()*500;
+          const slideStart = performance.now();
+          function slide(time) {
+            const t = Math.min((time - slideStart) / slideDuration, 1);
+            flower.style.left = startFinalX + (finalX - startFinalX) * t + 'px';
+            flower.style.top = startFinalY + (landingY - startFinalY) * t + 'px';
+            if (t < 1) requestAnimationFrame(slide);
+            else {
+              flower.style.left = finalX + 'px';
+              flower.style.top = landingY + 'px';
+              flower.style.transform = 'none';
+              landedFlowers.push(flower);
+            }
+          }
+          requestAnimationFrame(slide);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
   </script>
 </body>
 </html>
